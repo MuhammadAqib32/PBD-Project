@@ -1,0 +1,75 @@
+import os 
+folderpath =r"C:\users\dell"
+filepaths= [os.path.join (folderpath, name) for name in os.listdir(folderpath) ] 
+all_files = [ ]
+
+for path in filepaths: 
+    with open(path,'r', encoding="utf-8") as f:
+        file = f.readlines() 
+        all_files.append(file)
+
+
+
+all_files
+
+
+size =len(all_files)
+print(size)
+
+
+listToStr =' '.join (map (str, all_files))
+listToStr
+
+import nltk 
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+text = word_tokenize (listToStr) 
+data = [word for word in text if not word in stopwords.words ()]
+print(data)
+
+
+from nltk. stem import WordNetLemmatizer 
+lemma= WordNet Lemmatizer () 
+lem=[ ]
+for r in data:
+       lem. append (lemma.lemmatize (r))
+print (lemma. lemmatize( 'bats '))
+
+
+import re 
+dataupdate= [ ] 
+dataupdate=[re. sub('[^a-zA-z0-9]+ ', '', _) for _ in lem] 
+dataupdate
+
+
+
+from sklearn.feature_extraction.text import TfidfVectorizer 
+from sklearn.cluster import KMeans
+from sklearn.metrics import adjusted_rand_score
+from warnings import simplefilter
+simplefilter(action='ignore', category=FutureWarning)
+vectorizer=TfidfVectorizer(stop_words='english')
+X = vectorizer.fit_transform(dataupdate)
+true_k =7
+model = KMeans (n_clusters=true_k, init='k-means++', max_iter=100, n_init=1) 
+model.fit(X)
+print ("Top terms per cluster: ") 
+order_centroids = model.cluster_centers_.argsort()[:, ::-1] 
+terms = vectorizer.get_feature_names()
+for i in range(true_k): 
+         print("Cluster %d:" % i), 
+         for ind in order_centroids[i, :10]:
+               print( ' %s' % terms[ind]),
+
+
+
+print("Guessing :")
+Y = vectorizer.transform( ["directly"]) 
+guessing= model.predict(Y)
+print(guessing)
+Y =vectorizer.transform(["based upon the University of Michigan plan, and thus in one sense may"])
+guessing = model.predict(Y) 
+print(guessing)
+
+
+
